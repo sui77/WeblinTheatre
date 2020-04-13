@@ -118,7 +118,7 @@ class ChatBot {
                 xmlns: "firebat:user:identity",
                 // id: "id:sui:2:" + this.username,
                 jid: this.jid,
-                src: "https://weblin.sui.li/identity/" + this.username + ".xml",
+                src: this.config.get('location.webserver') + "/identity/" + this.username + ".xml",
             })
         ).append(
             xml("x", {
@@ -134,6 +134,8 @@ class ChatBot {
     }
 
     async jumpTo(room, x) {
+        console.log( this.config.get('location.webserver') + "/" +  this.username + ".xml");
+
         let presence = xml("presence", {
            // id: "d5df5eff17de",
             to: room + "/bot_" + this.username
@@ -142,7 +144,7 @@ class ChatBot {
                 xmlns: "firebat:user:identity",
                 // id: "id:sui:2:" + this.username,
                 jid: this.jid,
-                src: "https://weblin.sui.li/identity/" + this.username + ".xml",
+                src: this.config.get('location.webserver') + "/identity/" +  this.username + ".xml",
             })
         ).append(
             xml("x", {
@@ -177,48 +179,6 @@ console.log(iq.toString());
         //<iq from='platform@xmpp1.zweitgeist.com' to='64901854@xmpp1.zweitgeist.com/zg_fa6048d2b350' type='set'><query xmlns='jabber:iq:rpc'><methodCall><methodName>Main.LoadIdentity</methodName><params/></methodCall></query></iq>
     }
 
-    async joinExampleCom() {
-
-        log.info("[" + this.username + "] Joining example.com");
-
-        let presence = xml("presence", {
-            //  id: "d5df5eff17de",
-            to: "465806fbb3547c258cfa20becfef6e08f41c233b@muc4.virtual-presence.org/bot_" + this.username
-        });
-        await this.xmpp.send(presence);
-
-
-        presence = xml("presence", {
-            id: "d5df5eff17de",
-            to: "465806fbb3547c258cfa20becfef6e08f41c233b@muc4.virtual-presence.org/bot_" + this.username
-        }).append(
-            xml("x", {
-                xmlns: "http://jabber.org/protocol/muc",
-            }).append(
-                xml("history", {
-                    maxchars: 0,
-                    maxstanzas: 0,
-                })
-            )
-        ).append(
-            xml("x", {
-                xmlns: "firebat:user:identity",
-                // id: "id:sui:2:" + this.username,
-                jid: this.username + "@jitsi.sui.li",
-                src: "https://weblin.sui.li/identity/" + this.username + ".xml",
-            })
-        ).append(
-            xml("x", {
-                    xmlns: "firebat:avatar:state",
-                    //  id: "id:sui2:" + this.username,
-                        jid: this.username + "@jitsi.sui.li",
-                }
-            ).append(
-                xml("position", {x: 464})
-            )
-        );
-        await this.xmpp.send(presence);
-    }
 }
 
 module.exports = ChatBot;

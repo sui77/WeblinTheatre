@@ -28,23 +28,6 @@ async function start() {
         const koa = new WebServer(registry);
         koa.start();
 
-myBot = registry.get('botPool').get('sui');
-myBot.setNickname("hoschi").setAvatarUrl('http://avatar.zweitgeist.com/gif/006/Che/config.xml');
-myBot.start();
-//let x = await lms('http://sui.li')
-//console.log( x );
-/*
-        for (n = 50; n < 60; n++) {
-            bot[n] = new Bot(registry)
-            await bot[n].setCredentials('xmppjs' + n, 'testtest').start();
-            let b = bot[n];
-            // setInterval( () => { b.test() }, 1000);
-            setTimeout(() => {
-                b.joinExampleCom()
-            }, 1000 * n);
-        }
-*/
-
     } catch (e) {
         console.log("Start failed: " + e.message);
         process.exit();

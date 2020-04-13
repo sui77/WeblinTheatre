@@ -38,7 +38,6 @@ class Screenplay {
     }
 
     async getCharacter(ctx, name) {
-        console.log("GET CHARACTER");
         if (!_.has(this.characters[name], 'bot')) {
             ctx.characters[name].bot = ctx.registry.get('botPool').get();
             ctx.characters[name].bot.setNickname( name);
@@ -62,7 +61,7 @@ class Screenplay {
                 nScene++; this.scenes.push([]);
             } else {
                 let cmd = line.match(/^([A-Za-z0-9]*?)\.([a-zA-Z]*?) (.*)$/);
-console.log(cmd);
+
                 if (cmd !== null) {
                     if (cmd[1] != "System" && !_.has(this.characters, cmd[1])) {
                         this.characters[cmd[1]] = {}
@@ -94,12 +93,11 @@ console.log(cmd);
     }
 
     run(scene, step) {
-        console.log("RUN " + scene + " " + step );
+
         if (this.scenes.length > scene) {
             let currentScene = this.scenes[scene];
             if (currentScene.length > step) {
                 let currentStep = currentScene[step];
-                console.log( currentStep.command);
                 let delay = 100;
                 if (currentStep.command == "pause") {
                     delay = currentStep.value;
@@ -111,7 +109,6 @@ console.log(cmd);
                 this.run(scene+1, 0);
             }
         } else {
-console.log( this.characters);
                 for (let n in this.characters) {
                     this.registry.get('botPool').kill( this.characters[n].bot.username );
                     log.info("Kill " + this.characters[n].bot.username);

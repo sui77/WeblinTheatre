@@ -1,0 +1,22 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "NODE_ENV=dev NODE_TLS_REJECT_UNAUTHORIZED=0 nodemon index.js | node_modules/bunyan/bin/bunyan -o short",
+    "start:prod": "NODE_ENV=prod NODE_TLS_REJECT_UNAUTHORIZED=0 node index.js | node_modules/bunyan/bin/bunyan -o short"
+  },
+  "dependencies": {
+    "@xmpp/client": "^0.11.1",
+    "@xmpp/debug": "^0.11.0",
+    "bunyan": "^1.8.12",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-router": "^8.0.8",
+    "lodash": "^4.17.15",
+    "nodemon": "^2.0.2",
+    "redis-promisify": "^0.1.2",
+    "request": "^2.88.2",
+    "socket.io": "^2.3.0"
+  }
+}

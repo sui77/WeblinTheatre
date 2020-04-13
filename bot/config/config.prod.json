@@ -1,0 +1,20 @@
+{
+  "redis": {
+    "host": "127.0.0.1",
+    "port": 6379,
+    "db": 1
+  },
+  "xmpp": {
+    "service": "xmpp://jitsi.sui.li:5222",
+    "domain": "bot.jitsi.sui.li",
+    "resource": "bot"
+  },
+  "location": {
+    "host": "weblin.sui.li",
+    "webserver": "https://weblin.sui.li",
+    "websocket": "https://weblin.sui.li/wws",
+    "htdocs": "/var/www/sui.li/weblin/htdocs"
+  },
+  "socketIoPort": 8500,
+  "webserverPort": 8501
+}

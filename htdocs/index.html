@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Dashboard Template for Bootstrap</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+<nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Company name</a>
+    <!--input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="#">Sign out</a>
+        </li>
+    </ul-->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <?php include 'navigation.php'; ?>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <input id="room" value="https://weblin.sui.li"><br>
+            <textarea id="script" style="width:100%;height:300px">
+Che.setAvatar http://avatar.zweitgeist.com/gif/006/Che/config.xml
+Galileo.setAvatar http://avatar.zweitgeist.com/gif/006/Galileo/config.xml
+Marx.setAvatar http://avatar.zweitgeist.com/gif/006/Marx/config.xml
+Liberty.setAvatar http://avatar.zweitgeist.com/gif/006/StatueOfLiberty/config.xml
+Peach.setAvatar http://avatar.zweitgeist.com/gif/004/princess/config.xml
+Rosa.setAvatar http://avatar.zweitgeist.com/gif/006/Luxemburg/config.xml
+
+Scene 1
+    System.pause 1000
+    Liberty.join 600
+    Peach.join 240
+    Galileo.join 250
+    Rosa.join 300
+    Marx.join 350
+    System.pause 4000
+
+    Liberty.say Mit der Revolution ist es wie mit einem Fahrrad.
+    System.pause 8000
+
+    Marx.jumpTo 400
+    System.pause 1000
+    Marx.say Sie ist die Lokomotive der Geschichte?
+    System.pause 2000
+
+    Galileo.jumpTo 420
+    System.pause 1000
+    Galileo.say Sie dreht sich doch?
+    System.pause 2000
+
+    Rosa.jumpTo 440
+    System.pause 1000
+    Rosa.say Alles andere ist Quark?
+    System.pause 2000
+    Peach.say /do laugh
+
+    System.pause 3000
+
+    Che.join 100
+    System.pause 1000
+    Che.say /do deny
+    System.pause 1500
+    Che.say Rollt sie nicht vorwärts, dann fällt sie um!
+    System.pause 3000
+
+    Che.say /do idle3
+    Peach.say /do cheer
+    Rosa.say /do cheer
+    Liberty.say /do clap
+    Galileo.say /do cheer
+    Marx.say /do cheer
+
+    System.pause 10000
+
+
+                        </textarea>
+
+            <button class="js-test">Execute</button>
+    </div>
+    </main>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="{$websocket}/socket.io.js"></script>
+<script>
+
+
+
+    class Site {
+
+        constructor(ioserver) {
+            this.ioserver = ioserver;
+            this.initialized = false;
+        }
+
+        run() {
+            let self = this;
+            let tmp = this.ioserver.split('/');
+            let path = '/' + tmp.pop();
+            let host = tmp.join('/');
+            this.io = io(host, {path: path});
+
+            this.io.emitAsync = function (event, payload) {
+                return new Promise(function (resolve, reject) {
+                    return self.io.emit(event, payload, function (result) {
+                        return resolve(result);
+                    });
+                })
+            }
+
+            $('.js-test').click( async function(e) {
+                e.preventDefault();
+                let data = {
+                    room: $('#room').val(),
+                    script: $('#script').val(),
+                }
+                let result = await self.io.emitAsync('test', data);
+            });
+        }
+
+    }
+
+    $(function () {
+        window.Site = new Site('{$websocket}');
+        window.Site.run();
+    });
+
+</script>
+
+</body>
+</html>

@@ -13,7 +13,7 @@
     "host": "weblin.sui.li",
     "webserver": "https://weblin.sui.li",
     "websocket": "https://weblin.sui.li/wws",
-    "htdocs": "/var/www/sui.li/weblin/htdocs"
+    "htdocs": "../htdocs"
   },
   "socketIoPort": 8500,
   "webserverPort": 8501

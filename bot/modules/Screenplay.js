@@ -2,88 +2,97 @@ const bunyan = require('bunyan');
 const log = bunyan.createLogger({name: 'Screenplay'});
 const _ = require('lodash');
 
+systemCommands = {
+    pause: (params) => {
+        let ms = Math.round(params.value*1000);
+        log.info("Pause " + ms );
+        return new Promise(resolve => setTimeout(resolve, ms ));
+    }
+}
+
+characterCommands = {
+    avatar: async (character, value) => {
+        character.setAvatarUrl(value.value);
+    },
+    move: async (character, value) => {
+        character.move(value.room, value.value);
+    },
+    say: async (character, value) => {
+        character.say(value.room, value.value);
+    },
+    leave: async (character, value) => {
+        character.leave(value.room);
+    }
+};
+
+
 class Screenplay {
 
-
-    constructor(registry, code) {
+    constructor(registry) {
         this.registry = registry;
         this.config = registry.get('config');
-        this.code = code;
-        this.scenes = [[]];
+        this.code = [];
         this.characters = {};
         this.room = 'test@bot.jitsi.sui.li';
-
-        this.commands = {
-            setAvatar: async (character, value) => {
-                let c = await this.getCharacter(this, character);
-                c.setAvatarUrl(value)
-            },
-            join: async (character, value) => {
-                let c = await this.getCharacter(this, character);
-                c.join(this.room, value);
-            },
-            jumpTo: async (character, value) => {
-                let c = await this.getCharacter(this, character);
-                c.jumpTo(this.room, value);
-
-            },
-            say: async (character, value) => {
-                let c = await this.getCharacter(this, character);
-                c.say(this.room, value);
-
-            }
-
-        };
-
     }
 
-    async getCharacter(ctx, name) {
+    async getCharacter(name) {
+        log.info("getCharacter " + name);
         if (!_.has(this.characters[name], 'bot')) {
-            ctx.characters[name].bot = ctx.registry.get('botPool').get();
-            ctx.characters[name].bot.setNickname( name);
-            await ctx.characters[name].bot.start();
+            this.characters[name].bot = this.registry.get('botPool').get();
+            this.characters[name].bot.setNickname(name);
+            await this.characters[name].bot.start();
         }
 
-        return ctx.characters[name].bot;
+        return this.characters[name].bot;
     }
 
     setRoom(room) {
         this.room = room;
     }
 
-    parse() {
-        let aCode = this.code.split(/\n/);
+    setCode(code) {
+        let aCode = code.split(/\n/);
         let nScene = 0;
         let errors = [];
         for (let n in aCode) {
             let line = aCode[n].trim();
-            if (line.match(/^Scene/)) {
-                nScene++; this.scenes.push([]);
-            } else {
-                let cmd = line.match(/^([A-Za-z0-9]*?)\.([a-zA-Z]*?) (.*)$/);
 
-                if (cmd !== null) {
-                    if (cmd[1] != "System" && !_.has(this.characters, cmd[1])) {
-                        this.characters[cmd[1]] = {}
-                    }
-                    if (cmd[1] != "System" && !_.has(this.commands, cmd[2])) {
-                        errors.push("Unknown command " + cmd[2] + " in line " + n);
-                    } else {
-                        this.scenes[nScene].push( {
-                            character: cmd[1],
-                            command: cmd[2],
-                            value: cmd[3]
-                        });
-                    }
+            let characterCommand = line.match(/^([A-Za-z0-9]*?)\.([a-z]*)\s+(.*?)(\s+[0-9]{1,3}|$)/);
+            let systemCommand = line.match(/^(pause|#)(\s+.*|)/);
+
+            if (characterCommand !== null) {
+                this.characters[characterCommand[1]] = {}
+
+                if (!_.has(characterCommands, characterCommand[2])) {
+                    errors.push({line: n, msg: "Unknown command " + characterCommand[2], match: characterCommand});
+                } else {
+                    this.code.push({
+                        character: characterCommand[1],
+                        command: characterCommand[2],
+                        value: characterCommand[3],
+                        delay: characterCommand[4] * 1,
+                        raw: line
+                    });
                 }
+            } else if (systemCommand !== null) {
+                this.code.push({
+                    command: systemCommand[1],
+                    value: systemCommand[2].trim(),
+                    raw: line
+                });
+            } else {
+                this.code.push({
+                    command: 'invalid',
+                    raw: line
+                });
             }
-            //log.info( cmd );
+
         }
         log.info(errors);
         log.info(this.characters);
-        log.info(this.scenes);
+        log.info("CODE", this.code);
     }
-
 
 
     start() {
@@ -92,28 +101,31 @@ class Screenplay {
         this.run();
     }
 
-    run(scene, step) {
+    async run(step) {
+        log.info("Step " + step);
 
-        if (this.scenes.length > scene) {
-            let currentScene = this.scenes[scene];
-            if (currentScene.length > step) {
-                let currentStep = currentScene[step];
-                let delay = 100;
-                if (currentStep.command == "pause") {
-                    delay = currentStep.value;
-                } else {
-                    this.commands[currentStep.command](currentStep.character, currentStep.value);
-                }
-                setTimeout(() => { this.run(scene, step+1); }, delay);
+        if (this.code.length > step) {
+            let currentStep = this.code[step];
+            currentStep.room = this.room;
+            let delay = 100;
+            if (_.has(characterCommands, currentStep.command)) {
+                let character = await this.getCharacter(currentStep.character);
+                await characterCommands[currentStep.command](character, currentStep);
+                log.error( _.get(currentStep, 'delay', 0) );
+                await systemCommands['pause']( {value: _.get(currentStep, 'delay', 0) } );
+            } else if (_.has(systemCommands, currentStep.command)) {
+                await systemCommands[currentStep.command](currentStep);
             } else {
-                this.run(scene+1, 0);
+
             }
+            this.run(step + 1);
+
         } else {
-                for (let n in this.characters) {
-                    this.registry.get('botPool').kill( this.characters[n].bot.username );
-                    log.info("Kill " + this.characters[n].bot.username);
-                }
-                this.characters = {};
+            for (let n in this.characters) {
+                this.registry.get('botPool').kill(this.characters[n].bot.username);
+                log.info("Kill " + this.characters[n].bot.username);
+            }
+            this.characters = {};
         }
     }
 

@@ -16,5 +16,8 @@
     "htdocs": "../htdocs"
   },
   "socketIoPort": 8500,
-  "webserverPort": 8501
+  "webserverPort": 8501,
+  "settings": {
+    "logXMPP": false
+  }
 }

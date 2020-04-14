@@ -32,43 +32,47 @@ class ChatBot {
         return this;
     }
 
-    async start() {
-        log.info("[" + this.username + "] Initializing");
+    start() {
+        return new Promise( (resolve, reject) => {
+            log.info("[" + this.username + "] Initializing");
 
-        let config = this.config.get('xmpp');
-        config.username = this.username;
-        config.password = this.password;
+            let config = this.config.get('xmpp');
+            config.username = this.username;
+            config.password = this.password;
 
-        let xmpp = this.xmpp = client(config);
-
-
-        xmpp.on("status", (status) => {});
-        xmpp.on("error", (error) => this.xmppOnError(this, error));
-        xmpp.on("online", this.xmppOnOnline);
-        xmpp.on("offline", this.xmppOnOffline);
-        xmpp.on("stanza", this.xmppOnStanza);
-
-        xmpp.on("element", (msg) => this.xmppOnIncoming(this, msg));
-        xmpp.on("send", (msg) => this.xmppOnOutgoing(this, msg));
+            let xmpp = this.xmpp = client(config);
 
 
-        await xmpp.start().catch((msg) => log.error(msg));
-        log.info("[" + this.username + "] Connected");
+            xmpp.on("status", (status) => { });
+            xmpp.on("error", (error) => this.xmppOnError(this, error));
+            xmpp.on("online", () => {
+                log.info("[" + this.username + "] Online");
+                resolve()
+            } );
+            xmpp.on("offline", this.xmppOnOffline);
+            xmpp.on("stanza", this.xmppOnStanza);
+
+            xmpp.on("element", (msg) => this.xmppLog(this, 'IN: ' + msg));
+            xmpp.on("send", (msg) => this.xmppLog(this, 'OUT: ' + msg));
+
+
+            xmpp.start();
+
+       });
     }
 
-    xmppOnIncoming(foo, msg) {
-        //log.info("[" + this.username + "] IN: " + msg);
+    xmppLog(ctx, msg) {
+        if (this.config.get('settings.logXMPP')) {
+            log.info("[" + ctx.username + "] IN: " + msg);
+        }
     }
 
-    xmppOnOutgoing(foo, msg) {
-        //log.info("[" + this.username + "] OUT: " + msg);
+    async xmppOnError(ctx, err) {
+        log.error("[" + ctx.username + "] " + err.message);
     }
 
-    async xmppOnError(err) {
-        log.error("[" + this.username + "] " + err.message);
-    }
-
-    async xmppOnOnline() {
+    async xmppOnOnline(ctx) {
+        log.info("[" + ctx.username + "] online ");
 
     }
 
@@ -88,69 +92,21 @@ class ChatBot {
 
         }).append( xml("body").append(msg));
         await this.xmpp.send(message);
-        //<message xml:lang="de"><body>hello world</body></message>
-
     }
 
-    async join(room, x) {
-        log.info("[" + this.username + "] Joining " + room);
-
+    async move(room, x) {
         let presence = xml("presence", {
-            to: room + "/bot_" + this.username
-        });
-        await this.xmpp.send(presence);
-
-
-        presence = xml("presence", {
-           // id: "d5df5eff17de",
-            to: room + "/bot_" + this.username
-        }).append(
-            xml("x", {
-                xmlns: "http://jabber.org/protocol/muc",
-            }).append(
-                xml("history", {
-                    maxchars: 0,
-                    maxstanzas: 0,
-                })
-            )
-        ).append(
-            xml("x", {
-                xmlns: "firebat:user:identity",
-                // id: "id:sui:2:" + this.username,
-                jid: this.jid,
-                src: this.config.get('location.webserver') + "/identity/" + this.username + ".xml",
-            })
-        ).append(
-            xml("x", {
-                    xmlns: "firebat:avatar:state",
-                    //  id: "id:sui2:" + this.username,
-                        jid: this.jid,
-                }
-            ).append(
-                xml("position", {x: x})
-            )
-        );
-        await this.xmpp.send(presence);
-    }
-
-    async jumpTo(room, x) {
-        console.log( this.config.get('location.webserver') + "/" +  this.username + ".xml");
-
-        let presence = xml("presence", {
-           // id: "d5df5eff17de",
             to: room + "/bot_" + this.username
         }).append(
             xml("x", {
                 xmlns: "firebat:user:identity",
-                // id: "id:sui:2:" + this.username,
                 jid: this.jid,
                 src: this.config.get('location.webserver') + "/identity/" +  this.username + ".xml",
             })
         ).append(
             xml("x", {
                     xmlns: "firebat:avatar:state",
-                    //  id: "id:sui2:" + this.username,
-                        jid: this.jid,
+                    jid: this.jid,
                 }
             ).append(
                 xml("position", {x: x})
@@ -159,24 +115,13 @@ class ChatBot {
         await this.xmpp.send(presence);
     }
 
-
-    async test() {
-        let iq = xml("iq", {
-            to: "64901854@xmpp1.zweitgeist.com/zg_fa6048d2b350",
-            type: "set",
-            from: "platform@xmpp1.zweitgeist.com",
-            id: "wtf"
-
-        }).append(
-            xml("query", {
-                    xmlns: "jabber:iq:rpc",
-                }
-            ).append(xml("methodCall", {})
-                .append(xml("methodName", {}).append("Main.LoadIdentity")))
-        )
-        await this.xmpp.send(iq);
-console.log(iq.toString());
-        //<iq from='platform@xmpp1.zweitgeist.com' to='64901854@xmpp1.zweitgeist.com/zg_fa6048d2b350' type='set'><query xmlns='jabber:iq:rpc'><methodCall><methodName>Main.LoadIdentity</methodName><params/></methodCall></query></iq>
+    async leave(room, x) {
+        //<presence id='2606ffd47c95' type='unavailable' to='2883fcb56d5ac9d5e7adad03a38bce8a362dbdc2@muc4.virtual-presence.org/Sui'/>
+        let presence = xml("presence", {
+            to: room + '/bot_' + this.username,
+            type: 'unavailable'
+        });
+        await this.xmpp.send(presence);
     }
 
 }

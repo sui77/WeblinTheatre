@@ -2,7 +2,8 @@ const fs = require('fs');
 const mimeTypes = {
     html: 'text/html',
     css: 'text/css',
-    js: 'application/javascript'
+    js: 'application/javascript',
+    png: 'image/png'
 }
 
 module.exports = function (options) {

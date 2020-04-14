@@ -11,10 +11,13 @@
   },
   "location": {
     "host": "weblin.sui.li",
-    "webserver": "http://weblin.sui.li:8401",
-    "websocket": "http://weblin.sui.li:8400/wws",
+    "webserver": "https://weblindev.sui.li",
+    "websocket": "https://weblindev.sui.li/wws",
     "htdocs": "../htdocs"
   },
   "socketIoPort": 8400,
-  "webserverPort": 8401
+  "webserverPort": 8401,
+  "settings": {
+    "logXMPP": false
+  }
 }

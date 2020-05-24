@@ -12,7 +12,7 @@
   "location": {
     "host": "theatre.weblin.sui.li",
     "webserver": "https://theatre.weblin.sui.li",
-    "htdocs": "../htdocs"
+    "htdocs": "../public"
   },
   "webserverPort": 8401,
   "settings": {

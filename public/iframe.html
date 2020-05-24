@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>WeblinTheatre</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        .CodeMirror {
+            height: 100% !important;
+        }
+
+        .ctlButton {
+            width: 50px;
+            height: 50px;
+            position:fixed;right:10px;bottom:10px;z-index:9999
+        }
+        .btn-play {
+            background-image: url(img/play.png);
+            background-size: contain;
+        }
+        .btn-stop {
+            background-image: url(img/stop.png);
+            background-size: contain;
+        }
+    </style>
+</head>
+
+<body>
+
+
+<textarea id="code"></textarea>
+
+
+<div style="">
+    <div class="ctlButton btn-play js-play"></div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.css">
+<script src="js/codemirrorMode.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+    $(function () {
+        window.Site = new Site();
+    });
+</script>
+
+</body>
+</html>

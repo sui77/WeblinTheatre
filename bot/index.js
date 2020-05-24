@@ -1,4 +1,3 @@
-const SocketIo = require('./modules/SocketIo.js');
 const WebServer = require('./modules/WebServer.js');
 const registry = require('./library/Registry.js');
 const Bootstrap = require('./library/Bootstrap');
@@ -18,11 +17,6 @@ async function start() {
         await Bootstrap(registry);
 
         const config = registry.get('config');
-
-        // Socket.io Server
-        const sio = new SocketIo(registry);
-        registry.add('io', sio);
-        sio.start();
 
         // ApiServer
         const koa = new WebServer(registry);

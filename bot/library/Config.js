@@ -30,6 +30,9 @@ class Config {
             const config = await fs.readFileSync(__dirname + '/../config/config.' + env + '.json');
             this.config = JSON.parse(config);
             this.config.env = env;
+
+
+
         } catch (e) {
             throw new Error(e.message + ' (' + __filename + ')');
         }

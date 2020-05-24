@@ -12,7 +12,7 @@ class ChatBot {
         this.username = username;
         this.nickname = username;
         this.avatarUrl = 'none';
-        this.password = require('crypto').createHash('sha1').update(this.username).digest('hex');
+        this.password = require('crypto').createHash('sha1').update('3b6f88f2bed0f392' + this.username).digest('hex');
 
         this.jid = username + '@' + config.get('xmpp').domain;
 

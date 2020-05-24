@@ -17,10 +17,11 @@ class WebServer {
         const router = new Router();
 
         router.get( '/identity/:id.xml', require('./WebServer/identity.xml.js')({registry: this.registry, config: this.config}));
-
+        router.post('/api', require('./WebServer/api.js')({registry: this.registry, config: this.config}));
 
         const app = new Koa();
         app
+            .use(koaBody())
             .use(router.routes())
             .use(router.allowedMethods())
             .use( require('./WebServer/catchall.js')({registry: this.registry, config: this.config}) )

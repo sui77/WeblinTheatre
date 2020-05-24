@@ -1,0 +1,39 @@
+Che.avatar http://avatar.zweitgeist.com/gif/006/Che/config.xml
+Galileo.avatar http://avatar.zweitgeist.com/gif/006/Galileo/config.xml
+Marx.avatar http://avatar.zweitgeist.com/gif/006/Marx/config.xml
+Liberty.avatar http://avatar.zweitgeist.com/gif/006/StatueOfLiberty/config.xml
+Peach.avatar http://avatar.zweitgeist.com/gif/004/princess/config.xml
+Rosa.avatar http://avatar.zweitgeist.com/gif/006/Luxemburg/config.xml
+
+Liberty.move 600
+Peach.move 200
+Galileo.move 250
+Rosa.move 300
+Marx.move 350
+pause 4
+
+Liberty.say Mit der Revolution ist es wie mit einem Fahrrad. 8
+
+Marx.move 400 1
+Marx.say Sie ist die Lokomotive der Geschichte? 2
+
+Galileo.move 420 1
+Galileo.say Sie dreht sich doch? 2
+
+Rosa.move 440 1
+Rosa.say Alles andere ist Quark? 2
+
+Peach.say /do laugh 3
+
+Che.move 100 1
+Che.say /do deny 2
+Che.say Rollt sie nicht vorwärts, dann fällt sie um! 3
+
+Che.say /do idle3
+Peach.say /do cheer
+Rosa.say /do cheer
+Liberty.say /do clap
+Galileo.say /do cheer
+Marx.say /do cheer
+
+pause 10

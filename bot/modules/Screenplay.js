@@ -2,11 +2,17 @@ const bunyan = require('bunyan');
 const log = bunyan.createLogger({name: 'Screenplay'});
 const _ = require('lodash');
 
+status = {
+    idle: 0,
+    running: 1,
+    stopped: 2,
+}
+
 systemCommands = {
     pause: (params) => {
-        let ms = Math.round(params.value*1000);
-        log.info("Pause " + ms );
-        return new Promise(resolve => setTimeout(resolve, ms ));
+        let ms = Math.round(params.value * 1000);
+        log.info("Pause " + ms);
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 }
 
@@ -49,11 +55,11 @@ class Screenplay {
 
     setRoom(room) {
         this.room = room;
+        return this;
     }
 
     setCode(code) {
         let aCode = code.split(/\n/);
-        let nScene = 0;
         let errors = [];
         for (let n in aCode) {
             let line = aCode[n].trim();
@@ -91,18 +97,46 @@ class Screenplay {
         }
         log.info(errors);
         log.info(this.characters);
-        log.info("CODE", this.code);
+        return this;
     }
 
+    onFinish(func) {
+        this.triggerOnFinish = func;
+        return this;
+    }
+
+    setId(id) {
+        this.id = id;
+        return this;
+    }
 
     start() {
-        this.scene = 0;
-        this.step = 0;
-        this.run();
+        this.status = status.running;
+        this.run(0);
+        return this;
+    }
+
+    stop() {
+        this.status = status.stopped;
+    }
+
+    finalize() {
+        for (let n in this.characters) {
+            this.registry.get('botPool').kill(this.characters[n].bot.username);
+            log.info("Kill " + this.characters[n].bot.username);
+        }
+        this.characters = {};
+        if (this.triggerOnFinish) {
+            this.triggerOnFinish(this.id);
+        }
     }
 
     async run(step) {
         log.info("Step " + step);
+        if (this.status == status.stopped) {
+            this.finalize();
+            return;
+        }
 
         if (this.code.length > step) {
             let currentStep = this.code[step];
@@ -111,8 +145,8 @@ class Screenplay {
             if (_.has(characterCommands, currentStep.command)) {
                 let character = await this.getCharacter(currentStep.character);
                 await characterCommands[currentStep.command](character, currentStep);
-                log.error( _.get(currentStep, 'delay', 0) );
-                await systemCommands['pause']( {value: _.get(currentStep, 'delay', 0) } );
+                log.error(_.get(currentStep, 'delay', 0));
+                await systemCommands['pause']({value: _.get(currentStep, 'delay', 0)});
             } else if (_.has(systemCommands, currentStep.command)) {
                 await systemCommands[currentStep.command](currentStep);
             } else {
@@ -121,11 +155,8 @@ class Screenplay {
             this.run(step + 1);
 
         } else {
-            for (let n in this.characters) {
-                this.registry.get('botPool').kill(this.characters[n].bot.username);
-                log.info("Kill " + this.characters[n].bot.username);
-            }
-            this.characters = {};
+            this.finalize();
+            return;
         }
     }
 

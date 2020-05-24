@@ -5,18 +5,16 @@
     "db": 1
   },
   "xmpp": {
-    "service": "xmpp://jitsi.sui.li:5222",
-    "domain": "bot.jitsi.sui.li",
+    "service": "xmpp://xmpp.weblin.sui.li:5222",
+    "domain": "xmpp.dev.sui.li",
     "resource": "bot"
   },
   "location": {
-    "host": "weblin.sui.li",
-    "webserver": "https://weblin.sui.li",
-    "websocket": "https://weblin.sui.li/wws",
+    "host": "theatre.weblin.sui.li",
+    "webserver": "https://theatre.weblin.sui.li",
     "htdocs": "../htdocs"
   },
-  "socketIoPort": 8500,
-  "webserverPort": 8501,
+  "webserverPort": 8401,
   "settings": {
     "logXMPP": false
   }

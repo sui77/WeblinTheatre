@@ -6,7 +6,7 @@
   },
   "xmpp": {
     "service": "xmpp://xmpp.weblin.sui.li:5222",
-    "domain": "xmpp.dev.sui.li",
+    "domain": "xmpp.weblin.sui.li",
     "resource": "bot"
   },
   "location": {

@@ -10,8 +10,8 @@
     "resource": "bot"
   },
   "location": {
-    "host": "theatre.weblin.sui.li",
-    "webserver": "https://theatre.weblin.sui.li",
+    "host": "weblintheatre.k8s.sui.li",
+    "webserver": "https://weblintheatre.k8s.sui.li",
     "htdocs": "./public"
   },
   "webserverPort": 8401,

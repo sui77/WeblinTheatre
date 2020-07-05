@@ -12,6 +12,7 @@ module.exports = async function (registry) {
         await config.load();
         registry.add('config', config);
 
+        /*
         log.info('Init redis');
         const redis = require('redis-promisify');
         const client = redis.createClient(config.get('redis'));
@@ -19,6 +20,7 @@ module.exports = async function (registry) {
             throw (new Error(e.message));
         });
         registry.add('redis', client);
+        */
 
         log.info('Init BotPool');
         const botPool = require('../modules/ChatBotPool.js');

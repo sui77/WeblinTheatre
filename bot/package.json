@@ -9,6 +9,7 @@
   "dependencies": {
     "@xmpp/client": "^0.11.1",
     "@xmpp/debug": "^0.11.0",
+    "bent": "^7.3.7",
     "bunyan": "^1.8.12",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
@@ -16,7 +17,6 @@
     "lodash": "^4.17.15",
     "nodemon": "^2.0.2",
     "redis-promisify": "^0.1.2",
-    "request": "^2.88.2",
     "socket.io": "^2.3.0"
   }
 }

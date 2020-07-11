@@ -20,9 +20,17 @@
         }
 
         .ctlButton {
-            width: 50px;
+            width: 100px;
             height: 50px;
             position:fixed;right:10px;bottom:10px;z-index:9999
+        }
+        .ctlButton div {
+            width:50px;height:50px;
+            float:left;
+        }
+        .btn-save{
+            background-image: url(img/save.png);
+            background-size: contain;
         }
         .btn-play {
             background-image: url(img/play.png);
@@ -41,16 +49,14 @@
 <textarea id="code"></textarea>
 
 
-<div style="">
-    <div class="ctlButton btn-play js-play"></div>
+<div class="ctlButton">
+    <div class="btn-play js-play"></div>
+    <div class="btn-save js-save"></div>
 </div>
 
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script
-  src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-  crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.min.js"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.52.2/lib/codemirror.css">

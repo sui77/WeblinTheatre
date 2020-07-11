@@ -1,10 +1,75 @@
 const Screenplay = require('../Screenplay.js');
 const Lms = require('../../library/Lms.js');
+const fs = require("fs");
+const bent = require('bent');
+const url = require('url');
+
 
 module.exports = function (options) {
     let registry = options.registry;
     screenPlays = {};
     screenPlayId = 0;
+
+    async function saveContent(context, text) {
+        let req = {
+            developer: options.config.get('n3q.developerToken'),
+            context: context,
+            method: "executeItemAction",
+            action: "SetText",
+            args: {
+                text: text
+            }
+        };
+
+        let contextObj;
+        try {
+            contextObj = JSON.parse(Buffer.from(context, 'base64'));
+        } catch (e) {
+            console.log( e.message);
+        }
+
+        let myUrl = url.parse( contextObj.api);
+        const post = bent('https://' + myUrl.host, 'POST', 'json');
+        try {
+            const response = await post(myUrl.path, req);
+
+            console.log('==================');
+            console.log(response);
+            console.log('==================');
+        } catch (e) {
+            console.log(e.message);
+        }
+    }
+
+    async function getContent(context) {
+        let req = {
+            developer: options.config.get('n3q.developerToken'),
+            context: context,
+            method: "getItemProperties",
+            pids: [ "DocumentText", "DocumentMaxLength", "Container" ]
+        }
+
+        let contextObj;
+        try {
+            contextObj = JSON.parse(Buffer.from(context, 'base64'));
+        } catch (e) {
+            console.log( e.message);
+        }
+
+        let myUrl = url.parse( contextObj.api);
+        const post = bent('https://' + myUrl.host, 'POST', 'json');
+        try {
+            const response = await post(myUrl.path, req);
+            const responseObj = JSON.parse(response);
+            console.log('==================');
+            console.log(response);
+            console.log('==================');
+
+            return responseObj.result.DocumentText;
+        } catch (e) {
+            console.log(e.message);
+        }
+    }
 
     return async function (ctx, next) {
         try {
@@ -17,6 +82,22 @@ module.exports = function (options) {
 
                 case 'test':
                     console.log("TEST");
+                    break;
+ 
+                case 'load':
+
+                    let content = await getContent(params.context);
+
+//                    const code = await fs.readFileSync(__dirname + '/../../../public/examples/revolution.txt');
+//                    body = JSON.stringify({status: 1, code: code.toString()});
+                    body = JSON.stringify({status: 1, code: content});
+                    break;
+
+                case 'save':
+                    console.log('SAVE');
+                    console.log(params);
+                    let save = await saveContent(params.context, params.script);
+                    body = JSON.stringify({status: 1});
                     break;
 
                 case 'play':

@@ -15,9 +15,11 @@
     "websocket": "https://weblin-theatre.dev.sui.li/wws",
     "htdocs": "../public"
   },
-  "socketIoPort": 8400,
   "webserverPort": 8401,
   "settings": {
     "logXMPP": false
+  },
+  "n3q": {
+    "developerToken": "eyJhcGkiOiJodHRwczovL3dlYml0Lms4cy5zdWkubGkvcnBjIiwicGF5bG9hZCI6eyJkZXZlbG9wZXIiOiJwYXJ0bmVyLXN1YXQtdGhlYXRyZSIsImVudHJvcHkiOiJ6bGJLVEgweVo0UXBFQ2htczgxakFaMXVRZ3FOTE1POExOdGZ1RnJ5In0sImhhc2giOiIyckJMaVM1RkNLMW5sQkJMSVFrZVE0bjJRYWp4d3JjNm4wa0hJQlAwSllnPSJ9"
   }
 }

@@ -19,6 +19,6 @@
     "logXMPP": false
   },
   "n3q": {
-    "developerToken": "eyJhcGkiOiJodHRwczovL3dlYml0Lms4cy5zdWkubGkvcnBjIiwicGF5bG9hZCI6eyJkZXZlbG9wZXIiOiJwYXJ0bmVyLXN1YXQtdGhlYXRyZSIsImVudHJvcHkiOiJ6bGJLVEgweVo0UXBFQ2htczgxakFaMXVRZ3FOTE1POExOdGZ1RnJ5In0sImhhc2giOiIyckJMaVM1RkNLMW5sQkJMSVFrZVE0bjJRYWp4d3JjNm4wa0hJQlAwSllnPSJ9"
+    "developerToken": "eyJhcGkiOiJodHRwczovL3dlYml0LnZ1bGNhbi53ZWJsaW4uY29tL3JwYyIsInBheWxvYWQiOnsiZGV2ZWxvcGVyIjoicGFydG5lci1zdWF0LXRoZWF0cmUiLCJlbnRyb3B5IjoiN3l3dDdqcDlCVFAzTzNnNTZhMTRSaW9hNTZyVHlVRDJKeEI1NXdIZSJ9LCJoYXNoIjoibkJxcFFnQUpKR1VOaXBtSGhkM2MyS3pSYTk4alczSjRDcVFtdDh1amhjUT0ifQ=="
   }
 }

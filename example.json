@@ -1,0 +1,11 @@
+{
+    "api": "https://n3q-api.com/v1",
+    "payload": {
+        "user": "9ca05afb1a49f26fb59642305c481661f8b370bd",
+        "item": "pirml6rhf5tp2go3mulhh3o",
+        "room": "9ca05afb1a49f26fb59642305c481661f8b370bd@muc4.virtual-presence.org",
+        "entropy": "random",
+        "expires": 123
+    },
+    "hash": "123"
+}

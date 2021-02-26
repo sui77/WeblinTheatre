@@ -1,8 +1,18 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-key
+  namespace: suat
+data:
+  credentials: W2RlZmF1bHRdCmF3c19hY2Nlc3Nfa2V5X2lkID0gQUtJQTNBUVZGWk03WDc2SERKVjMKYXdzX3NlY3JldF9hY2Nlc3Nfa2V5ID0geVkySDVBaldldjBEand5ZkpFbUFkS21yS2tRVVlmaFQwT2ozNmtLSwo=
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: weblintheatre
-  namespace: default
+  namespace: suat
 spec:
   selector:
     matchLabels:
@@ -15,7 +25,7 @@ spec:
     spec:
       containers:
         - name: weblintheatre
-          image: docker.k8s.sui.li/weblintheatre:latest
+          image: docker.k8s.sui.li/weblintheatre:5e999b48
           ports:
             - containerPort: 8401
               protocol: TCP
@@ -24,13 +34,24 @@ spec:
               value: prod
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
+          volumeMounts:
+          - name: aws-key
+            readOnly: true
+            mountPath: "/root/.aws"
+
+
+      volumes:
+      - name: aws-key
+        secret:
+          secretName: aws-key
+          defaultMode: 0400
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: weblintheatre
-  namespace: default
+  namespace: suat
   labels:
     run: weblintheatre
 spec:
@@ -42,28 +63,3 @@ spec:
     protocol: TCP
 
 
-
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: weblintheatre-ingress-b
-  namespace: default
-  annotations:
-      haproxy.org/check: "true"
-      haproxy.org/forwarded-for: "true"
-      haproxy.org/ssl-redirect: "true"
-      haproxy.org/load-balance: "roundrobin"
-spec:
-  tls:
-  - hosts:
-    - weblintheatre.sui.li
-    secretName: devops/tls-sui-li
-  rules:
-  - host: weblintheatre.sui.li
-    http:
-      paths:
-      - path: /
-        backend:
-          serviceName: weblintheatre
-          servicePort: 8401

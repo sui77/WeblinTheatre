@@ -4,45 +4,64 @@ const fs = require("fs");
 const bent = require('bent');
 const url = require('url');
 
+var AWS = require('aws-sdk');
+AWS.config.update({region: 'eu-central-1'});
+
+const s3 = new AWS.S3();
+
 
 module.exports = function (options) {
     let registry = options.registry;
     screenPlays = {};
     screenPlayId = 0;
 
-    async function saveContent(context, text) {
-        let contextObj;
-        try {
-            contextObj = JSON.parse(Buffer.from(context, 'base64'));
-        } catch (e) {
-            console.log(e.message);
-        }
+    function saveContent(context, text) {
+        return new Promise((resolve, reject) => {
+            let contextObj;
+            try {
+                contextObj = JSON.parse(Buffer.from(context, 'base64'));
+            } catch (e) {
+                reject(e);
+            }
 
-        if (contextObj.payload.item.match(/[^a-z0-9]/)) {
-            return;
-        }
+            console.log( contextObj );
+            if (contextObj.payload.item.match(/[^a-z0-9]/)) {
+               reject(new Error('invalid name'));
+            }
 
-        fs.writeFileSync('/tmp/' + contextObj.payload.item, text, {encoding: 'utf8'});
+            s3.upload({Bucket: 'weblintheatre', Key: contextObj.payload.item, Body: text}, function (err, data) {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                if (data) {
+                    resolve(data.Location);
+                }
+            });
+        });
     }
 
     function getContent(context) {
-        let contextObj;
-        try {
-            contextObj = JSON.parse(Buffer.from(context, 'base64'));
-        } catch (e) {
-            console.log(e.message);
-        }
+        return new Promise((resolve, reject) => {
+            let contextObj;
+            try {
+                contextObj = JSON.parse(Buffer.from(context, 'base64'));
+            } catch (e) {
+                reject(err);
+            }
+console.log('get content');
+            s3.getObject({Bucket: 'weblintheatre', Key: contextObj.payload.item}, function (err, data) {
+                if (err) {
+                    // @todo
+                    resolve('');
+                }
+                if (data) {
+                    console.log("B");
+                    resolve(data.Body.toString('utf-8'));
+                }
+            });
+        });
 
-        if (contextObj.payload.item.match(/[^a-z0-9]/)) {
-            return;
-        }
-
-
-        let text = '';
-
-        text = fs.readFileSync('/tmp/' + contextObj.payload.item, 'utf8');
-        console.log(text);
-        return text;
     }
 
     return async function (ctx, next) {

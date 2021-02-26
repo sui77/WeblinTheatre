@@ -9,6 +9,7 @@
   "dependencies": {
     "@xmpp/client": "^0.11.1",
     "@xmpp/debug": "^0.11.0",
+    "aws-sdk": "^2.853.0",
     "bent": "^7.3.7",
     "bunyan": "^1.8.12",
     "koa": "^2.11.0",

@@ -5,8 +5,8 @@
     "db": 1
   },
   "xmpp": {
-    "service": "xmpp://xmpp.weblin.sui.li:5222",
-    "domain": "xmpp.weblin.sui.li",
+    "service": "xmpp://xmpp.vulcan.weblin.com:5222",
+    "domain": "xmpp.vulcan.weblin.com",
     "resource": "bot"
   },
   "location": {

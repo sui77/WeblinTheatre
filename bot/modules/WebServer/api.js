@@ -11,64 +11,38 @@ module.exports = function (options) {
     screenPlayId = 0;
 
     async function saveContent(context, text) {
-        let req = {
-            developer: options.config.get('n3q.developerToken'),
-            context: context,
-            method: "executeItemAction",
-            action: "SetText",
-            args: {
-                text: text
-            }
-        };
-
         let contextObj;
         try {
             contextObj = JSON.parse(Buffer.from(context, 'base64'));
         } catch (e) {
-            console.log( e.message);
-        }
-
-        let myUrl = url.parse( contextObj.api);
-        const post = bent('https://' + myUrl.host, 'POST', 'json');
-        try {
-            const response = await post(myUrl.path, req);
-
-            console.log('==================');
-            console.log(response);
-            console.log('==================');
-        } catch (e) {
             console.log(e.message);
         }
+
+        if (contextObj.payload.item.match(/[^a-z0-9]/)) {
+            return;
+        }
+
+        fs.writeFileSync('/tmp/' + contextObj.payload.item, text, {encoding: 'utf8'});
     }
 
-    async function getContent(context) {
-        let req = {
-            developer: options.config.get('n3q.developerToken'),
-            context: context,
-            method: "getItemProperties",
-            pids: [ "DocumentText", "DocumentMaxLength", "Container" ]
-        }
-
+    function getContent(context) {
         let contextObj;
         try {
             contextObj = JSON.parse(Buffer.from(context, 'base64'));
         } catch (e) {
-            console.log( e.message);
-        }
-
-        let myUrl = url.parse( contextObj.api);
-        const post = bent('https://' + myUrl.host, 'POST', 'json');
-        try {
-            const response = await post(myUrl.path, req);
-            const responseObj = JSON.parse(response);
-            console.log('==================');
-            console.log(response);
-            console.log('==================');
-
-            return responseObj.result.DocumentText;
-        } catch (e) {
             console.log(e.message);
         }
+
+        if (contextObj.payload.item.match(/[^a-z0-9]/)) {
+            return;
+        }
+
+
+        let text = '';
+
+        text = fs.readFileSync('/tmp/' + contextObj.payload.item, 'utf8');
+        console.log(text);
+        return text;
     }
 
     return async function (ctx, next) {
@@ -83,7 +57,7 @@ module.exports = function (options) {
                 case 'test':
                     console.log("TEST");
                     break;
- 
+
                 case 'load':
 
                     let content = await getContent(params.context);
@@ -115,14 +89,14 @@ module.exports = function (options) {
                     break;
 
                 case 'stop':
-                    if (typeof screenPlays[ params.spId ] != "undefined") {
-                        screenPlays[ params.spId ].stop();
+                    if (typeof screenPlays[params.spId] != "undefined") {
+                        screenPlays[params.spId].stop();
                     }
                     body = JSON.stringify({status: 1, id: ctx.request.body.id});
                     break;
 
                 case 'status':
-                    if (typeof screenPlays[ params.spId ] != "undefined") {
+                    if (typeof screenPlays[params.spId] != "undefined") {
                         body = JSON.stringify({status: 1, id: ctx.request.body.id});
                     } else {
                         body = JSON.stringify({status: 0, id: ctx.request.body.id});
